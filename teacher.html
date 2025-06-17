@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Page</title>
+    <link rel="stylesheet" href="style_teacher.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+<body>
+    <video autoplay loop muted playsinline id="background-video">
+        <source src="" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+    
+    <div class="navbar">
+        <div class="logo">
+            <h1 class="logo-text">CampusPulse</h1>
+        </div>
+        <div class="nav-buttons">
+            <button class="nav-btn about-btn" onclick="openAboutModal()">About</button>
+            <button class="nav-btn profile-btn" onclick="openProfileModal()">Profile</button>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </div>
+    
+    <div class="slogan">
+        <i>We Make Campus Life Easier</i>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="attendance-grid grid-item">
+                <a href="attendance2.html"><img src="attendance.jpg" alt="Attendance"></a>
+                <p class="image-title">Attendance</p>
+            </div>
+            <div class="event-grid grid-item">
+                <a href="event2.html"><img src="events.jpg" alt="Event"></a>
+                <p class="image-title">Event</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="od-grid grid-item">
+                <a href="onduty2.html"><img src="od.jpg" alt="OD"></a>
+                <p class="image-title">OD</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- About Modal -->
+    <div id="aboutModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-info-circle"></i> About CampusPulse</h2>
+                <span class="close" onclick="closeAboutModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="about-section">
+                    <h3><i class="fas fa-chalkboard-teacher"></i> Welcome to CampusPulse</h3>
+                    <p>Your comprehensive faculty portal for efficient classroom and student management at CIT Chennai.</p>
+                </div>
+                
+                <div class="about-section">
+                    <h3><i class="fas fa-tools"></i> Faculty Features</h3>
+                    <ul>
+                        <li><i class="fas fa-user-check"></i> Streamlined attendance management</li>
+                        <li><i class="fas fa-calendar-alt"></i> Event creation and coordination</li>
+                        <li><i class="fas fa-clipboard-check"></i> OD request approval system</li>
+                        <li><i class="fas fa-chart-bar"></i> Performance analytics</li>
+                        <li><i class="fas fa-bell"></i> Instant notifications</li>
+                    </ul>
+                </div>
+
+                <div class="about-section">
+                    <h3><i class="fas fa-question-circle"></i> Technical Support</h3>
+                    <p>Faculty support contacts:</p>
+                    <ul>
+                        <li><i class="fas fa-envelope"></i> Email: faculty.support@citchennai.net</li>
+                        <li><i class="fas fa-phone"></i> Help Desk: (044) 2345-6790</li>
+                        <li><i class="fas fa-clock"></i> Support Hours: Mon-Fri, 8:00 AM - 6:00 PM</li>
+                    </ul>
+                </div>
+
+                <div class="about-section">
+                    <h3><i class="fas fa-code"></i> System Information</h3>
+                    <p>CampusPulse Faculty Portal v2.0</p>
+                    <p>Last Updated: February 2025</p>
+                    <p> 2025 CIT Chennai. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Profile -->
+    <div id="profileModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2>Faculty Profile</h2>
+            <div class="profile-info">
+                <p><strong>Faculty ID:</strong> <span id="userRollNumber">Loading...</span></p>
+                <p><strong>Email:</strong> <span id="userEmail">Loading...</span></p>
+                <p><strong>Role:</strong> <span id="userRole">Faculty</span></p>
+                <p><strong>Department:</strong> <span id="userDept">Computer Science</span></p>
+                <p><strong>Designation:</strong> <span id="userDesignation">Associate Professor</span></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Check authentication on page load
+        window.addEventListener('DOMContentLoaded', function() {
+            checkAuth();
+            loadUserProfile();
+        });
+
+        // Check if user is authenticated
+        function checkAuth() {
+            const email = sessionStorage.getItem("email");
+            const rollNumber = sessionStorage.getItem("rollNumber");
+            
+            if (!email || !rollNumber) {
+                window.location.href = 'login.html';
+            }
+        }
+
+        // Load user profile data
+        function loadUserProfile() {
+            const email = sessionStorage.getItem("email");
+            const rollNumber = sessionStorage.getItem("rollNumber");
+            
+            document.getElementById('userEmail').textContent = email;
+            document.getElementById('userRollNumber').textContent = rollNumber;
+        }
+
+        // Function to show about info
+        function openAboutModal() {
+            document.getElementById('aboutModal').style.display = 'flex';
+        }
+
+        // Functios n to close about modal
+        function closeAboutModal() {
+            document.getElementById('aboutModal').style.display = 'none';
+        }
+
+        // Function to show profile
+        function openProfileModal() {
+            document.getElementById('profileModal').style.display = 'flex';
+        }
+
+        // Close modal when clicking the X or outside the modal
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
+        }
+
+        function logout() {
+            sessionStorage.clear();
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html>

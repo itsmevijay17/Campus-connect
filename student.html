@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Page</title>
+    <link rel="stylesheet" href="style2.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+<body>
+    <!-- Background Video -->
+    <video autoplay loop muted playsinline id="background-video">
+        <source src="" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+
+    <!-- Navbar -->
+    <div class="navbar">
+        <div class="logo">
+            <h1 class="logo-text">CampusPulse</h1>
+        </div>
+        <div class="nav-buttons">
+            <button class="nav-btn about-btn" onclick="showAboutInfo()">About</button>
+            <button class="nav-btn profile-btn" onclick="showProfile()">Profile</button>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </div>
+    
+    <div class="slogan">
+        <i>We Make Campus Life Easier</i>
+    </div>
+
+    <!-- Image Grid -->
+    <div class="container">
+        <div class="row">
+            <div class="attendance-grid grid-item">
+                <a href="attendance.html"><img src="attendance.jpg" alt="Attendance"></a>
+                <p class="image-title">Attendance</p>
+            </div>
+            <div class="event-grid grid-item">
+                <a href="event.html"><img src="events.jpg" alt="Event"></a>
+                <p class="image-title">Event</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="od-grid grid-item">
+                <a href="onduty.html"><img src="od.jpg" alt="OD"></a>
+                <p class="image-title">OD</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for About -->
+    <div id="aboutModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-info-circle"></i> About CampusPulse</h2>
+                <span class="close" onclick="closeAboutModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="about-section">
+                    <h3><i class="fas fa-graduation-cap"></i> Welcome to CampusPulse</h3>
+                    <p>Your comprehensive student portal for managing all aspects of campus life at CIT Chennai.</p>
+                </div>
+                
+                <div class="about-section">
+                    <h3><i class="fas fa-tools"></i> Key Features</h3>
+                    <ul>
+                        <li><i class="fas fa-check-circle"></i> Real-time attendance tracking</li>
+                        <li><i class="fas fa-calendar-check"></i> Event registration and updates</li>
+                        <li><i class="fas fa-file-alt"></i> Online OD form submission</li>
+                        <li><i class="fas fa-bell"></i> Instant notifications</li>
+                    </ul>
+                </div>
+
+                <div class="about-section">
+                    <h3><i class="fas fa-question-circle"></i> Need Help?</h3>
+                    <p>Contact our support team:</p>
+                    <ul>
+                        <li><i class="fas fa-envelope"></i> Email: support@citchennai.net</li>
+                        <li><i class="fas fa-phone"></i> Phone: (044) 2345-6789</li>
+                        <li><i class="fas fa-clock"></i> Hours: Mon-Fri, 9:00 AM - 5:00 PM</li>
+                    </ul>
+                </div>
+
+                <div class="about-section">
+                    <h3><i class="fas fa-code"></i> Version Info</h3>
+                    <p>CampusPulse v2.0</p>
+                    <p> 2025 CIT Chennai. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Profile -->
+    <div id="profileModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2>Student Profile</h2>
+            <div class="profile-info">
+                <p><strong>Roll Number:</strong> <span id="userRollNumber">Loading...</span></p>
+                <p><strong>Email:</strong> <span id="userEmail">Loading...</span></p>
+                <p><strong>Role:</strong> <span id="userRole">Student</span></p>
+                <p><strong>Department:</strong> <span id="userDept">Computer Science</span></p>
+                <p><strong>Year:</strong> <span id="userYear">3rd Year</span></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Check authentication on page load
+        window.addEventListener('DOMContentLoaded', function() {
+            checkAuth();
+            loadUserProfile();
+        });
+
+        // Check if user is authenticated
+        function checkAuth() {
+            const email = sessionStorage.getItem("email");
+            const rollNumber = sessionStorage.getItem("rollNumber");
+            
+            if (!email || !rollNumber) {
+                window.location.href = 'login.html';
+            }
+        }
+
+        // Load user profile data
+        function loadUserProfile() {
+            const email = sessionStorage.getItem("email");
+            const rollNumber = sessionStorage.getItem("rollNumber");
+            
+            document.getElementById('userEmail').textContent = email;
+            document.getElementById('userRollNumber').textContent = rollNumber;
+        }
+
+        // Logout function
+        function logout() {
+            // Clear session data
+            sessionStorage.clear();
+            // Redirect to login page
+            window.location.href = 'login.html';
+        }
+
+        // Modal functionality
+        function showAboutInfo() {
+            document.getElementById('aboutModal').style.display = 'flex';
+        }
+
+        function showProfile() {
+            document.getElementById('profileModal').style.display = 'flex';
+        }
+
+        function closeAboutModal() {
+            document.getElementById('aboutModal').style.display = 'none';
+        }
+
+        // Close modal when clicking the X or outside the modal
+        document.querySelectorAll('.close-btn').forEach(btn => {
+            btn.onclick = function() {
+                this.closest('.modal').style.display = 'none';
+            }
+        });
+
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
+        }
+
+        // Update student page to show organizer's decision on OD requests
+        const requestsContainer = document.getElementById('requests-container');
+        const requests = [
+            // Sample data, replace with actual data
+            {
+                event: 'Event 1',
+                department: 'Department 1',
+                role: 'Role 1',
+                status: 'Approved',
+                organiserStatus: 'Approved by Organiser',
+                rejectReason: '',
+                organiserRejectReason: ''
+            },
+            {
+                event: 'Event 2',
+                department: 'Department 2',
+                role: 'Role 2',
+                status: 'Rejected',
+                organiserStatus: 'Rejected by Organiser',
+                rejectReason: 'Reason for rejection',
+                organiserRejectReason: 'Organiser reason for rejection'
+            }
+        ];
+
+        requests.forEach(request => {
+            const card = document.createElement("div");
+            card.className = "request-card";
+            let statusClass = request.status === "Approved" ? "status-approved" : "status-rejected";
+            let statusIcon = request.status === "Approved" ? "check" : "times";
+            
+            // If there's an organizer status, update the display accordingly
+            let statusText = request.status;
+            if (request.organiserStatus) {
+                if (request.organiserStatus === "Approved by Organiser") {
+                    statusClass = "status-approved";
+                    statusIcon = "check-double";
+                    statusText = "Approved by Teacher & Organiser";
+                } else if (request.organiserStatus === "Rejected by Organiser") {
+                    statusClass = "status-rejected";
+                    statusIcon = "times";
+                    statusText = "Rejected by Organiser";
+                }
+            }
+
+            card.innerHTML = `
+                <div class="request-header">
+                    <h3>${request.event}</h3>
+                    <span class="status-badge ${statusClass}">
+                        <i class="fas fa-${statusIcon}"></i> ${statusText}
+                    </span>
+                </div>
+                <div class="request-details">
+                    <p><strong>Department:</strong> ${request.department}</p>
+                    <p><strong>Role:</strong> ${request.role}</p>
+                    ${request.rejectReason ? `
+                        <div class="reason-box">
+                            <i class="fas fa-info-circle"></i>
+                            <strong>Teacher's Reason for Rejection:</strong> ${request.rejectReason}
+                        </div>
+                    ` : ''}
+                    ${request.organiserRejectReason ? `
+                        <div class="reason-box">
+                            <i class="fas fa-info-circle"></i>
+                            <strong>Organiser's Reason for Rejection:</strong> ${request.organiserRejectReason}
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+            requestsContainer.appendChild(card);
+        });
+    </script>
+</body>
+</html>

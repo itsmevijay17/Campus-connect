@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Approved Requests</title>
+    <link rel="stylesheet" href="style2.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .page-title {
+            color: #0D47A1;
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            font-weight: bold;
+        }
+
+        .request-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .request-header {
+            margin-bottom: 1rem;
+        }
+
+        .request-title {
+            font-size: 1.2rem;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .request-info {
+            margin-bottom: 1rem;
+        }
+
+        .info-row {
+            display: flex;
+            margin-bottom: 0.5rem;
+        }
+
+        .info-label {
+            font-weight: bold;
+            width: 120px;
+            color: #666;
+        }
+
+        .info-value {
+            color: #333;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .accept-btn, .deny-btn {
+            flex: 1;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: opacity 0.2s;
+        }
+
+        .accept-btn {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .deny-btn {
+            background-color: #f44336;
+            color: white;
+        }
+
+        .accept-btn:hover, .deny-btn:hover {
+            opacity: 0.9;
+        }
+
+        .back-btn {
+            background: #1a237e;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-bottom: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-left: 1rem;
+        }
+
+        .status-pending {
+            background-color: #FFF3E0;
+            color: #E65100;
+        }
+
+        .status-approved {
+            background-color: #E8F5E9;
+            color: #2E7D32;
+        }
+
+        .status-rejected {
+            background-color: #FFEBEE;
+            color: #C62828;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+        }
+
+        .modal textarea {
+            width: 100%;
+            padding: 0.75rem;
+            margin: 1rem 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            resize: vertical;
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Video -->
+    <video autoplay loop muted playsinline id="background-video">
+        <source src="" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+
+    <div class="navbar">
+        <div class="logo">
+            <h1 class="logo-text">CampusPulse</h1>
+        </div>
+        <div class="nav-buttons">
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <button class="back-btn" onclick="window.location.href='organiser.html'">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </button>
+        
+        <h1 class="page-title"><i class="fas fa-check-circle"></i> Teacher Approved Requests</h1>
+        <div id="approvedContainer">
+            <!-- Requests will be dynamically added here -->
+        </div>
+    </div>
+
+    <!-- Reject Modal -->
+    <div id="rejectModal" class="modal">
+        <div class="modal-content">
+            <h3>Reject Request</h3>
+            <textarea id="rejectReason" placeholder="Please provide a reason for rejection" rows="4"></textarea>
+            <div class="button-group">
+                <button class="accept-btn" onclick="submitRejection()">Submit</button>
+                <button class="deny-btn" onclick="closeRejectModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentRequestForRejection = null;
+
+        window.addEventListener('DOMContentLoaded', function() {
+            checkAuth();
+            loadApprovedRequests();
+        });
+
+        function checkAuth() {
+            const email = sessionStorage.getItem("email");
+            const rollNumber = sessionStorage.getItem("rollNumber");
+            
+            if (!email || !rollNumber) {
+                window.location.href = 'login.html';
+            }
+        }
+
+        function loadApprovedRequests() {
+            const odRequests = JSON.parse(localStorage.getItem("odRequests")) || [];
+            const approvedContainer = document.getElementById("approvedContainer");
+            approvedContainer.innerHTML = "";
+
+            // Filter requests that are approved by teacher
+            const approvedRequests = odRequests.filter(request => request.status === "Approved");
+
+            if (approvedRequests.length === 0) {
+                approvedContainer.innerHTML = `
+                    <div class="request-card">
+                        <p style="text-align: center; color: #666;">No approved requests found.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            approvedRequests.forEach(request => {
+                const card = document.createElement("div");
+                card.className = "request-card";
+                
+                // Determine status display
+                let statusDisplay = "";
+                let statusClass = "";
+                if (request.organiserStatus === "Approved") {
+                    statusDisplay = "Approved";
+                    statusClass = "status-approved";
+                } else if (request.organiserStatus === "Rejected") {
+                    statusDisplay = "Rejected";
+                    statusClass = "status-rejected";
+                } else {
+                    statusDisplay = "Pending";
+                    statusClass = "status-pending";
+                }
+
+                card.innerHTML = `
+                    <div class="request-header">
+                        <div class="request-title">
+                            ${request.studentName}
+                            <span class="status-badge ${statusClass}">${statusDisplay}</span>
+                        </div>
+                    </div>
+                    <div class="request-info">
+                        <div class="info-row">
+                            <span class="info-label">Department:</span>
+                            <span class="info-value">${request.department}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Role:</span>
+                            <span class="info-value">${request.role}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Event:</span>
+                            <span class="info-value">${request.event}</span>
+                        </div>
+                        ${request.organiserRejectReason ? `
+                        <div class="info-row">
+                            <span class="info-label">Reject Reason:</span>
+                            <span class="info-value">${request.organiserRejectReason}</span>
+                        </div>
+                        ` : ''}
+                    </div>
+                    ${!request.organiserStatus ? `
+                        <div class="button-group">
+                            <button class="accept-btn" onclick="approveRequest('${request.studentName}')">
+                                <i class="fas fa-check"></i> Accept
+                            </button>
+                            <button class="deny-btn" onclick="showRejectModal('${request.studentName}')">
+                                <i class="fas fa-times"></i> Deny
+                            </button>
+                        </div>
+                    ` : ''}
+                `;
+                
+                approvedContainer.appendChild(card);
+            });
+        }
+
+        function approveRequest(studentName) {
+            const odRequests = JSON.parse(localStorage.getItem("odRequests")) || [];
+            const requestIndex = odRequests.findIndex(r => r.studentName === studentName);
+            
+            if (requestIndex !== -1) {
+                odRequests[requestIndex].organiserStatus = "Approved";
+                localStorage.setItem("odRequests", JSON.stringify(odRequests));
+                loadApprovedRequests();
+            }
+        }
+
+        function showRejectModal(studentName) {
+            currentRequestForRejection = studentName;
+            document.getElementById('rejectModal').style.display = 'flex';
+            document.getElementById('rejectReason').value = '';
+        }
+
+        function closeRejectModal() {
+            document.getElementById('rejectModal').style.display = 'none';
+            currentRequestForRejection = null;
+        }
+
+        function submitRejection() {
+            if (!currentRequestForRejection) return;
+            
+            const rejectReason = document.getElementById("rejectReason").value.trim();
+            if (!rejectReason) {
+                alert("Please provide a reason for rejection");
+                return;
+            }
+            
+            const odRequests = JSON.parse(localStorage.getItem("odRequests")) || [];
+            const requestIndex = odRequests.findIndex(r => r.studentName === currentRequestForRejection);
+            
+            if (requestIndex !== -1) {
+                odRequests[requestIndex].organiserStatus = "Rejected";
+                odRequests[requestIndex].organiserRejectReason = rejectReason;
+                localStorage.setItem("odRequests", JSON.stringify(odRequests));
+                closeRejectModal();
+                loadApprovedRequests();
+            }
+        }
+
+        function logout() {
+            sessionStorage.clear();
+            window.location.href = 'login.html';
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                closeRejectModal();
+            }
+        }
+    </script>
+</body>
+</html>

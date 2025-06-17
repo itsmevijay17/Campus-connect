@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Profile</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #000000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+        .profile-container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 300px;
+            margin-top: 20px;
+        }
+        .profile-container img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            margin-bottom: 15px;
+        }
+        .profile-container h2 {
+            margin: 10px 0;
+        }
+        .profile-details {
+            text-align: left;
+            margin-top: 10px;
+        }
+        .profile-details p {
+            margin: 5px 0;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="profile-container" id="profile">
+        <img id="profile-photo" src="" alt="Student Photo">
+        <h2 id="profile-name"></h2>
+        <div class="profile-details">
+            <p><strong>Roll No:</strong> <span id="profile-rollno"></span></p>
+            <p><strong>Department:</strong> <span id="profile-department"></span></p>
+            <p><strong>Section:</strong> <span id="profile-section"></span></p>
+            <p><strong>Year:</strong> <span id="profile-year"></span></p>
+            <p><strong>Class Advisor:</strong> <span id="profile-advisor"></span></p>
+            <p><strong>Attendance Percentage:</strong> <span id="profile-attendance"></span>%</p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const rollNo = sessionStorage.getItem("studentRollNo") || "2023001"; // Default roll number
+            fetch(getStudentProfile.php?roll_no=$: {rollNo})
+                .then(response => response.json())
+                .then(studentData => {
+                    if (studentData && !studentData.error) {
+                        document.getElementById('profile-name').textContent = studentData.name;
+                        document.getElementById('profile-rollno').textContent = studentData.roll_no;
+                        document.getElementById('profile-department').textContent = studentData.department;
+                        document.getElementById('profile-section').textContent = studentData.section;
+                        document.getElementById('profile-year').textContent = studentData.year;
+                        document.getElementById('profile-advisor').textContent = studentData.advisor;
+                        document.getElementById('profile-attendance').textContent = studentData.attendance;
+                        document.getElementById('profile-photo').src = studentData.photo_url;
+                    } else {
+                        document.body.innerHTML = <h2>${studentData.error}</h2>;
+                    }
+                })
+                .catch(error => {
+                    console.error("Error fetching student data:", error);
+                    document.body.innerHTML = '<h2>Error loading profile. Please try again later.</h2>';
+                });
+        });
+    </script>
+</body>
+</html>

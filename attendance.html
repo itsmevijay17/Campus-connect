@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Scanner</title>
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background: url('attendanc.jpg') no-repeat center center/cover;
+            color: white;
+            text-align: center;
+        }
+        h2 {
+            margin-bottom: 20px;
+        }
+        #qr-reader {
+            width: 300px;
+            border: 2px solid white;
+            border-radius: 10px;
+            padding: 10px;
+            background: white;
+        }
+        #success-tick {
+            display: none;
+            font-size: 100px;
+            color: #4CAF50;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>QR Code Scanner</h2>
+    <div id="qr-reader"></div>
+    <div id="success-tick">✔️</div>
+
+    <script>
+        function onScanSuccess(decodedText) {
+            document.getElementById("success-tick").style.display = "block";
+            document.getElementById("qr-reader").style.display = "none";
+            console.log("Scanned QR Code: " + decodedText);
+        }
+
+        function startScanner() {
+            let html5QrcodeScanner = new Html5Qrcode("qr-reader");
+            html5QrcodeScanner.start(
+                { facingMode: "environment" }, // Back camera
+                { fps: 10, qrbox: 250 },
+                onScanSuccess
+            ).catch(err => console.error("Camera Error: ", err));
+        }
+
+        // Automatically start scanning when the page loads
+        window.onload = startScanner;
+    </script>
+
+</body>
+</html>

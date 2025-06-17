@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student OD Requests</title>
+    <style>
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            background: linear-gradient(to right, #e3f2fd, #bbdefb); 
+            margin: 0; 
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container { 
+            width: 90%; 
+            max-width: 600px; 
+            padding: 20px; 
+            background: #ffffff; 
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); 
+            border-radius: 12px; 
+            border-left: 8px solid #0d47a1;
+        }
+        h1 { 
+            text-align: center; 
+            color: #0d47a1; 
+            margin-bottom: 20px;
+        }
+        .od-card { 
+            padding: 15px; 
+            margin: 15px 0; 
+            border-radius: 8px; 
+            background: #e3f2fd; 
+            border-left: 6px solid #1565c0;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: 0.3s;
+        }
+        .od-card:hover { 
+            transform: scale(1.02); 
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+        .od-card h3 { 
+            color: #0d47a1; 
+            margin-bottom: 8px;
+        }
+        .od-card p { 
+            color: #1e3a8a; 
+            font-size: 14px;
+        }
+        .status { 
+            font-weight: bold; 
+            padding: 5px 10px; 
+            border-radius: 5px; 
+            display: inline-block;
+        }
+        .pending { 
+            background: #ffeb3b; 
+            color: #856404;
+        }
+        .accepted { 
+            background: #2e7d32; 
+            color: white;
+        }
+        .denied { 
+            background: #d32f2f; 
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>My OD Requests & Status</h1>
+        <div id="odRequests"></div>
+    </div>
+
+    <script>
+        function loadODRequests() {
+            let odRequests = JSON.parse(localStorage.getItem("odRequests")) || [];
+            let odRequestsContainer = document.getElementById("odRequests");
+            odRequestsContainer.innerHTML = "";
+
+            odRequests.forEach(request => {
+                let statusClass = request.status === "Pending" ? "pending" : 
+                                request.status === "Approved" ? "accepted" : "denied";
+
+                let statusText = request.status;
+                if (request.organiserStatus) {
+                    statusText += ` (${request.organiserStatus} by Organiser)`;
+                }
+
+                let odCard = document.createElement("div");
+                odCard.className = "od-card";
+                odCard.innerHTML = `
+                    <h3>${request.event}</h3>
+                    <p><strong>Name:</strong> ${request.name}</p>
+                    <p><strong>Department:</strong> ${request.department}</p>
+                    <p><strong>Role:</strong> ${request.role}</p>
+                    <p><strong>Status:</strong> <span class="status ${statusClass}">${statusText}</span></p>
+                    ${request.rejectReason ? `<p><strong>Teacher Rejection Reason:</strong> ${request.rejectReason}</p>` : ''}
+                    ${request.organiserRejectReason ? `<p><strong>Organiser Rejection Reason:</strong> ${request.organiserRejectReason}</p>` : ''}
+                `;
+                odRequestsContainer.appendChild(odCard);
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", loadODRequests);
+    </script>
+</body>
+</html>

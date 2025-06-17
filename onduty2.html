@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher OD Requests</title>
+    <style>
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            background: linear-gradient(to right, #e3f2fd, #bbdefb); 
+            margin: 0; 
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container { 
+            width: 90%; 
+            max-width: 600px; 
+            padding: 20px; 
+            background: #ffffff; 
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); 
+            border-radius: 12px; 
+            border-left: 8px solid #0d47a1;
+        }
+        h1 { 
+            text-align: center; 
+            color: #0d47a1; 
+            margin-bottom: 20px;
+        }
+        .od-card { 
+            padding: 15px; 
+            margin: 15px 0; 
+            border-radius: 8px; 
+            background: #e3f2fd; 
+            border-left: 6px solid #1565c0;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: 0.3s;
+        }
+        .od-card:hover { 
+            transform: scale(1.02); 
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+        .od-card h3 { 
+            color: #0d47a1; 
+            margin-bottom: 8px;
+        }
+        .od-card p { 
+            color: #1e3a8a; 
+            font-size: 14px;
+        }
+        .buttons { 
+            display: flex; 
+            gap: 12px; 
+            margin-top: 10px;
+        }
+        .accept-btn, .deny-btn { 
+            flex: 1;
+            padding: 10px; 
+            font-size: 14px;
+            border: none; 
+            cursor: pointer; 
+            border-radius: 6px; 
+            transition: 0.3s;
+        }
+        .accept-btn { 
+            background: #2e7d32; 
+            color: white; 
+        }
+        .accept-btn:hover { 
+            background: #1b5e20; 
+        }
+        .deny-btn { 
+            background: #d32f2f; 
+            color: white; 
+        }
+        .deny-btn:hover { 
+            background: #b71c1c; 
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Pending OD Requests</h1>
+        <div id="odRequests"></div>
+    </div>
+
+    <script>
+        function loadODRequests() {
+            let odRequests = JSON.parse(localStorage.getItem("odRequests")) || [];
+            let odRequestsContainer = document.getElementById("odRequests");
+            odRequestsContainer.innerHTML = "";
+
+            odRequests.forEach((request, index) => {
+                if (request.status === "Pending") {
+                    let odCard = document.createElement("div");
+                    odCard.className = "od-card";
+                    odCard.innerHTML = `
+                        <h3>${request.event}</h3>
+                        <p><strong>Name:</strong> ${request.name}</p>
+                        <p><strong>Department:</strong> ${request.department}</p>
+                        <p><strong>Role:</strong> ${request.role}</p>
+                        <div class="buttons">
+                            <button class="accept-btn" onclick="updateStatus(${index}, 'Approved')">✅ Accept</button>
+                            <button class="deny-btn" onclick="updateStatus(${index}, 'Rejected')">❌ Deny</button>
+                        </div>
+                    `;
+                    odRequestsContainer.appendChild(odCard);
+                }
+            });
+        }
+
+        function updateStatus(index, status) {
+            let odRequests = JSON.parse(localStorage.getItem("odRequests"));
+            odRequests[index].status = status;
+            localStorage.setItem("odRequests", JSON.stringify(odRequests));
+            loadODRequests();
+        }
+
+        document.addEventListener("DOMContentLoaded", loadODRequests);
+    </script>
+</body>
+</html>

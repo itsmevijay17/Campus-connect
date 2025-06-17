@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="style2.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+<body>
+    <!-- Background Video -->
+    <video autoplay loop muted playsinline id="background-video">
+        <source src="" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+
+    <!-- Navbar -->
+    <div class="navbar">
+        <div class="logo">
+            <h1 class="logo-text">CampusPulse</h1>
+        </div>
+        <div class="nav-buttons">
+            <button class="nav-btn about-btn" onclick="showAboutInfo()">About</button>
+            <button class="nav-btn profile-btn" onclick="showProfile()">Profile</button>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </div>
+    
+    <div class="slogan">
+        <i>We Make Campus Life Easier</i>
+    </div>
+
+    <!-- Image Grid -->
+    <div class="container">
+        <div class="row">
+            <div class="attendance-grid grid-item">
+                <a href="admin_users.html"><img src="users.webp" alt="Users"></a>
+                <p class="image-title">Users</p>
+            </div>
+            <div class="event-grid grid-item">
+                <a href="admin_events.html"><img src="events.jpg" alt="Event"></a>
+                <p class="image-title">Event</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="venues-grid grid-item">
+                <a href="venues.html"><img src="venues.webp" alt="Venues"></a>
+                <p class="image-title">Venues</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for About -->
+    <div id="aboutModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-info-circle"></i> About CampusPulse</h2>
+                <span class="close" onclick="closeAboutModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="about-section">
+                    <h3><i class="fas fa-user-shield"></i> Admin Dashboard</h3>
+                    <p>Welcome to the administrative control center of CampusPulse at CIT Chennai.</p>
+                </div>
+                
+                <div class="about-section">
+                    <h3><i class="fas fa-tools"></i> Administrative Features</h3>
+                    <ul>
+                        <li><i class="fas fa-users"></i> User Management</li>
+                        <li><i class="fas fa-calendar-check"></i> Event Oversight</li>
+                        <li><i class="fas fa-building"></i> Venue Management</li>
+                        <li><i class="fas fa-chart-bar"></i> System Analytics</li>
+                    </ul>
+                </div>
+
+                <div class="about-section">
+                    <h3><i class="fas fa-question-circle"></i> Support</h3>
+                    <p>Technical support contacts:</p>
+                    <ul>
+                        <li><i class="fas fa-envelope"></i> Email: admin.support@citchennai.net</li>
+                        <li><i class="fas fa-phone"></i> Emergency: (044) 2345-6789</li>
+                    </ul>
+                </div>
+
+                <div class="about-section">
+                    <h3><i class="fas fa-code"></i> System Information</h3>
+                    <p>CampusPulse Admin Portal v2.0</p>
+                    <p> 2025 CIT Chennai. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Profile -->
+    <div id="profileModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2>Admin Profile</h2>
+            <div class="profile-info">
+                <p><strong>Admin ID:</strong> <span id="userRollNumber">Loading...</span></p>
+                <p><strong>Email:</strong> <span id="userEmail">Loading...</span></p>
+                <p><strong>Role:</strong> <span id="userRole">Administrator</span></p>
+                <p><strong>Access Level:</strong> <span id="accessLevel">Full System Access</span></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Check authentication on page load
+        window.addEventListener('DOMContentLoaded', function() {
+            checkAuth();
+            loadUserProfile();
+        });
+
+        // Check if user is authenticated
+        function checkAuth() {
+            const email = sessionStorage.getItem("email");
+            const rollNumber = sessionStorage.getItem("rollNumber");
+            
+            if (!email || !rollNumber) {
+                window.location.href = 'login.html';
+            }
+        }
+
+        // Load user profile data
+        function loadUserProfile() {
+            const email = sessionStorage.getItem("email");
+            const rollNumber = sessionStorage.getItem("rollNumber");
+            
+            document.getElementById('userEmail').textContent = email;
+            document.getElementById('userRollNumber').textContent = rollNumber;
+        }
+
+        // Show about info
+        function showAboutInfo() {
+            document.getElementById('aboutModal').style.display = 'flex';
+        }
+
+        // Show profile
+        function showProfile() {
+            document.getElementById('profileModal').style.display = 'flex';
+        }
+
+        // Close about modal
+        function closeAboutModal() {
+            document.getElementById('aboutModal').style.display = 'none';
+        }
+
+        // Close modal when clicking the X or outside the modal
+        document.querySelectorAll('.close-btn').forEach(btn => {
+            btn.onclick = function() {
+                this.closest('.modal').style.display = 'none';
+            }
+        });
+
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
+        }
+
+        // Logout function
+        function logout() {
+            sessionStorage.clear();
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html>

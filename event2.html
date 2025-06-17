@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upcoming Events</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to right, #e3f2fd, #bbdefb);
+        }
+        header {
+            background-color: #1565c0;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .container {
+            width: 90%;
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #ffffff;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            border-left: 6px solid #0d47a1;
+        }
+        h2 {
+            color: #0d47a1;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+        button {
+            background-color: #1565c0;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        button:hover {
+            background-color: #0d47a1;
+        }
+        .event-card {
+            background: #e3f2fd;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+            border-left: 5px solid #1565c0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            position: relative;
+            transition: 0.3s;
+        }
+        .event-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        }
+        .event-card h3 {
+            color: #0d47a1;
+            margin-bottom: 5px;
+        }
+        .event-card p {
+            color: #333;
+            font-size: 0.95rem;
+        }
+        .event-card a {
+            color: #1565c0;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .event-card a:hover {
+            text-decoration: underline;
+        }
+        .remove-button {
+            background-color: #d32f2f;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .remove-button:hover {
+            background-color: #b71c1c;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    Upcoming Events
+</header>
+
+<div class="container">
+    <h2>Add New Event</h2>
+    <form id="eventForm">
+        <input type="text" id="eventName" placeholder="Event Name" required>
+        <input type="date" id="eventDate" required>
+        <input type="text" id="eventLocation" placeholder="Location" required>
+        <input type="text" id="googleform" placeholder="Google Form Link" required>
+        <button type="submit">Add Event</button>
+    </form>
+</div>
+
+<div class="container" id="eventsContainer">
+    <!-- Events will be dynamically added here -->
+</div>
+
+<script>
+    function loadEvents() {
+        let events = JSON.parse(localStorage.getItem("events")) || [];
+        let eventsContainer = document.getElementById("eventsContainer");
+        eventsContainer.innerHTML = "";
+
+        events.forEach((event, index) => {
+            let eventCard = document.createElement("div");
+            eventCard.className = "event-card";
+            eventCard.innerHTML = `
+                <h3>${event.name}</h3>
+                <p><strong>Date:</strong> ${event.date}</p>
+                <p><strong>Location:</strong> ${event.location}</p>
+                <p><strong>Registration:</strong> <a href="${event.form}" target="_blank">Click here</a></p>
+                <button class="remove-button" onclick="removeEvent(${index})">Remove</button>
+            `;
+            eventsContainer.appendChild(eventCard);
+        });
+    }
+
+    function removeEvent(index) {
+        let events = JSON.parse(localStorage.getItem("events")) || [];
+        events.splice(index, 1);
+        localStorage.setItem("events", JSON.stringify(events));
+        loadEvents();
+    }
+
+    document.getElementById("eventForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+        let eventName = document.getElementById("eventName").value;
+        let eventDate = document.getElementById("eventDate").value;
+        let eventLocation = document.getElementById("eventLocation").value;
+        let eventGoogleForm = document.getElementById("googleform").value;
+
+        let newEvent = { name: eventName, date: eventDate, location: eventLocation, form: eventGoogleForm };
+        let events = JSON.parse(localStorage.getItem("events")) || [];
+        events.push(newEvent);
+        localStorage.setItem("events", JSON.stringify(events));
+
+        document.getElementById("eventForm").reset();
+        loadEvents();
+    });
+
+    document.addEventListener("DOMContentLoaded", loadEvents);
+</script>
+
+</body>
+</html>
